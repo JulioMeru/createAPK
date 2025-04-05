@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<head>
+<style>
+pre {background-color: #ddd;}
+#index > span {display: block;}
+.import {font-family: monospace; display: block;}
+</style>
+</head>
+<body>
+<h1>Android</h1>
+<p>Guide based on <a href="https://www.hanshq.net/command-line-android.html">hanshq.net</a> under a linux system.</p>
+<h3>Index</h3>
+<span id="index">
+<ul>
+<li><a href="#Basic_Application">Basic Application</a></li>
+<ul>
+    <li><a href="#Basic_Structure">Basic Structure</a></li>
+    <li><a href="#Manifest">Manifest</a></li>
+    <li><a href="#Main_Activity">Main Activity</a></li>
+    <li><a href="#Main_Layout">Main Layout</a></li>
+</ul>
+<li><a href="#Alert_Dialog">Alert Dialog</a></li>
+<li><a href="#Alert_Dialog_Items">Alert Dialog Items</a></li>
+<li><a href="#Menu">Menu</a></li>
+<li><a href="#Menu_Item_Selected">Menu Item Selected</a></li>
+<li><a href="#Toast">Toast</a></li>
+<li><a href="#Shared_Preferences">Shared Preferences</a></li>
+<li><a href="#Building_APK">Building APK</a></li>
+<ul>
+    <li><a href="#Building">Building</a></li>
+</ul>
+</ul>
+</span>
+
+
+
+<h2 id="Basic_Application">Basic Application</h2>
+<p>Basic application that shows a text message on screen.</p>
+
+<h3 id="Basic_Structure">Basic structure</h3>
+<pre>
+.
+├── AndroidManifest.xml
+├── java
+│   └── com
+│       └── example
+│           └── app
+│               └── MainActivity.java
+└── res
+    └─── layout
+         └── activity_main.xml
+</pre>
+<hr>
+<h3 id="Manifest">Manifest</h3>
+<span class="file">AndroidManifest.xml</span>
+<pre>
+<xmp><?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.example.app"
+          versionCode="1"
+          versionName="0.1">
+    <uses-sdk android:minSdkVersion="23"/>
+    <application
+        android:allowBackup="true"
+        android:label="My App">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+    </application>
+</manifest></xmp></pre>
+<hr>
+<h3 id="Main_Activity">Main Activity</h3>
+<span class="file">java/com/example/app/MainActivity.java</span>
+<pre>
+package com.package.app;
+
+import android.app.Activity;
+import android.os.Bundle;
+
+public class MainActivity extends Activity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_main);
+    }
+}
+</pre>
+<hr>
+<h3 id="Main_Layout">Main Layout</h3>
+<span class="file">res/layout/activity_main.xml</span>
+<pre><xmp><?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"
+        android:id="@+id/my_text"/>
+</LinearLayout></xmp></pre>
+<hr>
+
+<h3>Look and Behavior</h3>
+<h4>Fullscreen, No Title Bar</h4>
+<p>Add parameter to application in manifest:</p>
+<pre><xmp>android:theme="@android:style/Theme.NoTitleBar.Fullscreen"</xmp></pre>
+<h4>Prevent Screen from Restarting on Screen Changes</h4>
+<p>Add parameter to activity in manifest:</p>
+<pre><xmp>android:configChanges="orientation|screenSize|keyboardHidden"</xmp></pre>
+<h4>Change Back Button Behavior</h4>
+<pre>@Override
+public void onBackPressed() {
+    // code
+}</pre>
+<hr>
+
+<h3 id="Button">Button</h3>
+<span class="import">android.widget.Button</span>
+<h4>Add a button</h4>
+<span class="file">res/layout/activity_main.xml</span>
+<pre><xmp><Button
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/my_button"
+    android:text="Click me!"/></xmp></pre>
+<h4>Add action</h4>
+<pre>my_button = findViewById(R.id.my_button);
+my_button.setOnClickListener(v -> {
+    // code
+});
+</pre>
+<hr>
+<h3>Activity</h3>
+<span class="import">android.content.Intent</span>
+<h4>Add New Activity</h4>
+<h5>Create a layout</h5>
+<span class="file">res/layout/activity_second.xml</span>
+<pre><xmp><?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="This is the second intent"/>
+</LinearLayout></xmp></pre>
+<h5>Add Activity in Manifest</h5>
+<span class="file">AndroidManifest.xml</span>
+<pre><xmp><activity
+    android:name=".SecondActivity"
+    android:parentActivityName=".MainActivity"></xmp></pre>
+<h5>Create Second Activity Java File</h5>
+<span class="file">java/com/example/Example/SecondActivity.java</span>
+<pre>package com.example.Example;
+
+import android.app.Activity;
+import android.os.Bundle;
+
+public class SecondActivity extends Activity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_second);
+    }   
+}</pre>
+<h5>Call second Activity from Main</h5>
+<span class="file">java/com/example/Example/MainActivity.java</span>
+<pre>Intent i = new Intent(this, SecondActivity.class);
+startActivity(i);</pre>
+<h5>Send String to Second Activity</h5>
+<p>Before calling second activity:</p>
+<pre>i.putExtra("message", "This is the message");</pre>
+<p>In second Activity:</p>
+<pre>String message = getIntent().getStringExtra("message");</pre>
+<hr>
+
+<h3>Files</h3>
+<span class="import">java.io.FileWriter;</span>
+<span class="import">java.io.FileReader;</span>
+<span class="import">java.io.BufferedReader;</span>
+<span class="import">android.os.Environment</span>
+<h4>Write Text File</h4>
+<p>Add write permission to Manifest. They must be turned on by user:</p>
+<pre><xmp><uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/></xmp></pre>
+<p>Create </span class="file">alphabet.txt</span> file in Movies Directory containing uppercase letters:</p>
+<pre>String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).getAbsolutePath();
+FileWriter letters = new FileWriter(path + "/alphabet.txt");
+for (int i=65; i<91; i++) {
+    letters.write((char) i);
+}
+letters.close();</pre>
+<h4>Read Text File</h4>
+<pre>BufferedReader br = new BufferedReader(new FileReader(path + "/alphabet.txt"));
+StringBuilder sb = new StringBuilder();
+String line = br.readLine();
+while (line != null) {
+    sb.append(line);
+    sb.append(System.lineSeparator());
+    line = br.readLine();
+}
+String contents = sb.toString();</pre>
+<hr>
+
+
+<h3>ListView</h3>
+<span class="import">android.widget.AdapterView</span>
+<span class="import">android.widget.ArrayAdapter</span>
+<span class="import">android.widget.ListView</span>
+<span class="import">android.view.View</span>
+<p>Add list view to <code>res/layout/activity_main.xml</code>:</p>
+<pre><xmp><ListView
+    android:id="@+id/list"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"/></xmp></pre>
+<p>Create item layout</p>
+<span class="file">res/layout/list_item.xml</span>
+<pre><xmp><?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"/></xmp></pre>
+<pre>
+String items[] = {"Item 1", "Item 2", "Item 3"};
+ListView l = findViewById(R.id.list);
+ArrayAdapter<String> arr = new ArrayAdapter<String>(this, R.layout.list_item, items);
+l.setAdapter(arr);</pre>
+<p>Add event on click:</p>
+<pre>l.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        // code
+    }
+});</pre></hr>
+
+<h3>ListView with Object</h3>
+<span class="import">android.widget.Button</span>
+<span class="import">android.widget.ListView</span>
+<span class="import">android.widget.ImageView</span>
+<span class="import">android.widget.ArrayAdapter</span>
+<span class="import">android.widget.AdapterView</span>
+<span class="import">android.view.View</span>
+<span class="import">android.view.ViewGroup</span>
+<span class="import">android.view.LayoutInflater</span>
+<span class="import">android.graphics.Bitmap</span>
+<span class="import">android.graphics.BitmapFactory</span>
+<span class="import">android.content.Context</span>
+        
+<span class="import">java.util.List</span>
+<span class="import">java.util.ArrayList</span>
+<p>The object will have a picture, a title, and a button.<p>
+<h4>Add List View to <code>activity_main</code></h4>
+<pre><xmp><ListView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/list"/></xmp></pre>
+<h4>Create <code>res/layout/list_item.xml</code></h4>
+<pre><xmp><?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/list_item_icon"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/list_item_title"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/list_item_button"
+        android:text="Button"/>
+</LinearLayout></xmp></pre>
+<h4>This example uses a resource picture that must located in <code>res/drawable/icon_resource.png</code></h4>
+<h4>Create class for objects</h4>
+<pre>class ListItem {
+    Bitmap icon;
+    public String title;
+    ListItem (Context context, String title) {
+        icon = BitmapFactory.decodeResource(context.getResources(), R.drawable.icon_resource);
+        this.title = title;
+    }   
+}</pre>
+<h4>Create class for Adapter</h4>
+<pre>class ListItemAdapter extends ArrayAdapter<ListItem> {
+    private int viewId;
+    private MainActivity activity;
+    ListItemAdapter(MainActivity context, int textViewResourceId, List<ListItem> objects) {
+        super(context, textViewResourceId, objects);
+        activity = context;
+        viewId = textViewResourceId;
+    }
+    @Override
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        ListItem listItem = getItem(position);
+        if (convertView == null) {
+            convertView = LayoutInflater.from(getContext()).inflate(viewId, parent, false);
+        }
+        TextView tv = convertView.findViewById(R.id.list_item_title);
+        tv.setText(listItem.title);
+        ImageView iv = convertView.findViewById(R.id.list_item_icon);
+        iv.setImageBitmap(listItem.icon);
+        Button b = convertView.findViewById(R.id.list_item_button);
+        b.setOnClickListener(v -> {
+            // code for button
+        });
+        return convertView;
+    }
+}</pre>
+<h4>Create List and Add Adapter in Main Activity</h4>
+<pre>ArrayList<ListItem> list;
+ListView lv = (ListView) findViewById(R.id.list);
+list = new ArrayList<>();
+list.add(new ListItem(this, "Item 1"));
+list.add(new ListItem(this, "Item 2"));
+list.add(new ListItem(this, "Item 3"));
+ListItemAdapter listAdapter = new ListItemAdapter(MainActivity.this, R.layout.list_item, list);
+lv.setAdapter(listAdapter);</pre>
+<hr>
+
+
+<h3>WebView</h3>
+<span class="import">android.webkit.WebView</span>
+<span class="import">android.webkit.WebViewClient<span>
+<span class="import">android.webkit.WebSettings</span>
+<h4>Show local web page</h4>
+<p>Create HTML file in a new directory <code>assets</code>:</p>
+<span class="file">assets/index.html</span>
+<pre><xmp><html>
+<head>
+</head>
+<body>
+    <p>This is a web page.</p>
+</body>
+</html></xmp></pre>
+<p>Add WebView to activity layout:</p>
+<pre><xmp><WebView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/webview"/></xmp></pre>
+<pre>WebView wv = findViewById(R.id.webview);
+wv.loadUrl("file:///android_asset/index.html");</pre>
+<p>Note: Option <code>-A assets</code> needs to be added during packaging building.</p>
+<h4>Add More Functionality</h4>
+<pre>WebSettings ws = wv.getSettings();
+ws.setJavaScriptEnabled(true);
+ws.setAllowFileAccessFromFileURLs(true);
+ws.setDomStorageEnabled(true);
+ws.setDatabaseEnabled(true);</pre>
+<h4>Event when page is loaded</h4>
+<pre>wv.setWebViewClient(new WebViewClient() {
+    @Override
+    public void onPageFinished(WebView view, String url) {
+        super.onPageFinished(view, url);
+        // code
+    }
+});</pre>
+<hr>
+
+<h3 id="Alert_Dialog">Alert Dialog</h3>
+<span class="import">android.app.AlertDialog</span>
+<span class="import">android.content.DialogInterface</span>
+<pre>
+AlertDialog ad = new AlertDialog.Builder(this).create();
+ad.setTitle("Tittle");
+ad.setMessage("This is an alert dialog.");
+ad.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+    new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int which) {
+            dialog.dismiss();
+        }
+    }
+);      
+ad.show();
+</pre>
+</hr>
+
+<h3 id="Alert_Dialog_Items">Alert Dialog Items</h3>
+<span class="import">android.app.AlertDialog</span>
+<span class="import">android.content.DialogInterface</span>
+<pre>
+final CharSequence[] items = {"Option 1", "Option 2", "Option 3"};
+AlertDialog.Builder builder = new AlertDialog.Builder(this);
+builder.setTitle("Tittle");
+builder.setItems(items, new DialogInterface.OnClickListener() {
+    public void onClick(DialogInterface dialog, int item) {
+        dialog.dismiss();
+    }
+});
+AlertDialog ad = builder.create();
+ad.show();
+</pre>
+
+<h3>Alert Yes or No</h3>
+<p>Ask user whether to close application.</p>
+<pre>AlertDialog.Builder b = new AlertDialog.Builder(this);
+b.setTitle("You are Leaving");
+b.setMessage("Are you sure you want to close application?");
+b.setPositiveButton("Yes", 
+    new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int which) {
+            MainActivity.super.onBackPressed();
+        }
+    }
+);
+b.setNegativeButton("No", 
+    new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int which) {
+            dialog.dismiss();
+        }
+    }
+);
+AlertDialog ad = b.create();
+ad.show();</pre>
+<hr>
+
+<h3 id="Menu">Menu</h3>
+<span class="import">android.view.Menu</span>
+<span class="import">android.view.MenuInflater</span>
+<span class="file">res/menu/menu_main.xml</span>
+<pre><xmp><menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_item_1"
+        android:title="Menu Item 1" />
+    <item
+        android:id="@+id/menu_item_2"
+        android:title="Menu Item 2" />
+    <item
+        android:id="@+id/menu_item_3"
+        android:title="Menu Item 3" />
+</menu>
+</xmp></pre>
+<pre>
+public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.menu_main, menu);
+    return true;
+}
+</pre>
+<hr>
+
+<h3 id="Menu_Item_Selected">Menu Item Selected</h3>
+<span class="import">android.view.MenuItem</span>
+<pre>
+public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+        case R.id.menu_item_1:
+            // code
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+    }   
+}
+</pre>
+<hr>
+
+<h3 id="Toast">Toast</h3>
+<span class="import">android.widget.Toast</span>
+<pre>
+Toast.makeText(this, "This is a toast message", Toast.LENGTH_LONG).show();
+</pre><hr>
+
+<h3 id="Shared_Preferences">Shared Preferences</h3>
+<span class="import">android.content.SharedPreferences</span>
+<span class="import">android.preference.PreferenceManager</span>
+<h4>Store a value:</h4>
+<pre>
+String key = "number";
+int value = 7;
+SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+SharedPreferences.Editor editor = preferences.edit();
+editor.putInt(key, value);
+editor.apply();
+</pre>
+<h4>Fetch stored value:</h4>
+<pre>
+int default_value = 0;
+String key = "number";
+SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+int value = preferences.getInt(key, default_value);
+</pre><hr>
+
+<h2 id="Building_APK">Building APK</h2>
+<p>To build an APK, SDK (which include build tools and platform tools) is needed. But for small applications, a few binaries are necessary.</p>
+<p><b>AAPT</b>, <b>D8</b>, and <b>Java Development Kit</b> are required. <b>zipalign</b> to align APK and <b>apksigner</b> to sign it. 	Additionally, platform file <code>android.jar</code> and library <code>libc++.so</code> are needed. Other files may be also be required depending on building environment.</p>
+<p>Tools assumed to be on directory <code>sdk/</code>. Building files with be placed on a new directory <code>build/<code> with subdirectories <code>build/apk</code>, <code>build/gen</code>, and <code>build/obj</code>. Leaving the following tree:</p>
+<pre>
+.
+├── AndroidManifest.xml
+├── build
+│   ├── apk
+│   ├── gen
+│   └── obj
+├── java
+│   └── com
+│       └── example
+│           └── Example
+│               └── MainActivity.java
+├── res
+│   ├── layout
+│   │   └── activity_main.xml
+│   └── values
+│       └── strings.xml
+└── sdk
+    ├── aapt
+    ├── android.jar
+    ├── apksigner.jar
+    ├── d8.jar
+    ├── lib64
+    │   └── libc++.so
+    └── zipalign
+</pre>
+<h3>Create Key Store</h3>
+<p>To be able to install APKs into android devices, APKs need to be signed. And to do that, a key store needs to be created.</p>
+<pre>keytool -genkeypair -keystore keystore.jks -alias androidkey -validity 10000 -keyalg RSA -keysize 2048 -storepass android -keypass android</pre>
+<p>Input information when prompted and confirm. A file <code>build/keystore.jks</code> will be created.</p>
+<h3 id="Building">Building</h3>
+<h4>Generate <code>R.java</code> resource file</h4>
+<pre>sdk/aapt package -f -m -J build/gen/ -S res/ -M AndroidManifest.xml -I sdk/android.jar</pre>
+<p><code>-f</code> overwrites existing files. <code>-m</code> creates subdirectories. <code>-J</code> points where to generates <code>R.java</code> file. <code>-S</code> points out resource directory. <code>-M</code> specifies manifest. <code>-I</code> adds an existing package.<p>
+
+<h4>Compile code</h4>
+<pre>javac -classpath sdk/android.jar -d build/obj/ build/gen/com/example/Example/R.java java/com/example/Example/*.java</pre>
+<p><code>-classpath</code> where to find user class files. <code>-d</code> where to place generated class files. </p>
+<h4>Translate class files into Dalvik code</h4>
+<pre>java -cp sdk/d8.jar com.android.tools.r8.D8 --lib sdk/android.jar --output build/apk/ build/obj/com/example/Example/*.class</pre>
+<h4>Package everything together</h4>
+<pre>sdk/aapt package -f -M AndroidManifest.xml -S res/ -I sdk/android.jar -F build/Example.unaligned.apk build/apk/</pre>
+<h4>Align APK</h4>
+<pre>sdk/zipalign -f -p 4 build/Example.unaligned.apk build/Example.aligned.apk</pre>
+<h4>Sign APK</h4>
+<pre>java -jar sdk/apksigner.jar sign --ks sdk/keystore.jks --ks-key-alias androidkey \
+--ks-pass pass:android --key-pass pass:android --out build/Example.apk build/Example.aligned.apk</pre>
+
+<h4>Install APK on Android Device</h4>
+<pre>adb install build/Example.apk</pre>
+<p>Add <code>-r</code> after <code>install</code> to overwrite APK on device.</p>
+<p>If no errors are found, the file <code>build/Example.apk</code> will be created and installed on device.</p>
+<hr>
+</body>
+</html>
